@@ -31,9 +31,9 @@
     <div class="question">
       <p>Tu dois acheter de l'huile d'olive, quelle huile d'olive achètes-tu ?</p>
       <div class="options" id="options">
-<img src="images/huile1.jpg" alt="Option A" data-value="A">
-<img src="images/huile2.jpg" alt="Option B" data-value="B">
-<img src="images/huile3.jpg" alt="Option C" data-value="C">
+        <img src="images/huile1.jpg" alt="Option A" data-value="A">
+        <img src="images/huile2.jpg" alt="Option B" data-value="B">
+        <img src="images/huile3.jpg" alt="Option C" data-value="C">
       </div>
       <select name="selection" id="selection">
         <option value="A">A</option>
@@ -48,6 +48,7 @@
     const options = document.querySelectorAll('.options img');
     const selectField = document.getElementById('selection');
 
+    // Ajout de la logique pour rendre le formulaire interactif avec les icônes
     options.forEach(option => {
       option.addEventListener('click', () => {
         // Supprimer la classe 'selected' des autres options
@@ -61,10 +62,32 @@
       });
     });
 
-    document.getElementById('quiz-form').addEventListener('submit', (e) => {
+    // Envoi des données vers Make après soumission du formulaire
+    document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      alert(`Votre choix : ${selectField.value}`);
-      // Tu peux envoyer les données ici via fetch() ou un autre outil
+      
+      // Récupération des données
+      const selectionValue = selectField.value;
+      const formData = {
+        selection: selectionValue,
+      };
+
+      try {
+        const response = await fetch('https://your-make-webhook-url', { // Remplace avec l'URL du webhook généré dans Make
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+          alert('Les données ont été soumises avec succès à Airtable via Make');
+        } else {
+          alert('Échec de l’envoi des données');
+        }
+      } catch (error) {
+        console.error('Erreur lors de l’envoi avec fetch', error);
+        alert('Une erreur est survenue');
+      }
     });
   </script>
 </body>
