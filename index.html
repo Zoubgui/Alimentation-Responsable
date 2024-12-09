@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire Interactif</title>
+  <style>
+    .question {
+      margin-bottom: 20px;
+    }
+    .options {
+      display: flex;
+      gap: 10px;
+    }
+    .options img {
+      width: 150px;
+      height: auto;
+      border: 2px solid transparent;
+      cursor: pointer;
+    }
+    .options img.selected {
+      border-color: blue;
+    }
+    select {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <form id="quiz-form">
+    <div class="question">
+      <p>Tu dois acheter de l'huile d'olive, quelle huile d'olive achètes-tu ?</p>
+      <div class="options" id="options">
+        <img src="image1.jpg" alt="Option A" data-value="A">
+        <img src="image2.jpg" alt="Option B" data-value="B">
+        <img src="image3.jpg" alt="Option C" data-value="C">
+      </div>
+      <select name="selection" id="selection">
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+      </select>
+    </div>
+    <button type="submit">Soumettre</button>
+  </form>
+
+  <script>
+    const options = document.querySelectorAll('.options img');
+    const selectField = document.getElementById('selection');
+
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        // Supprimer la classe 'selected' des autres options
+        options.forEach(opt => opt.classList.remove('selected'));
+
+        // Ajouter la classe 'selected' à l'option cliquée
+        option.classList.add('selected');
+
+        // Mettre à jour la valeur du champ select
+        selectField.value = option.dataset.value;
+      });
+    });
+
+    document.getElementById('quiz-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert(`Votre choix : ${selectField.value}`);
+      // Tu peux envoyer les données ici via fetch() ou un autre outil
+    });
+  </script>
+</body>
+</html>
