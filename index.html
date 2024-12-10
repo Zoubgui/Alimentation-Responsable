@@ -35,11 +35,12 @@
     }
 
     .dynamic-image img {
-      max-width: 300px;
-      height: auto;
+      max-width: 100%; /* S'adapte à la taille de son conteneur */
+      height: auto; /* Maintenir les proportions */
       border: 2px solid #333;
       border-radius: 10px;
       display: none;
+      transition: all 0.3s ease-in-out;
     }
 
     button {
@@ -101,7 +102,6 @@
       });
     });
 
-    // Génération d'un ID unique
     function generateUniqueID() {
       return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     }
@@ -115,7 +115,6 @@
         return;
       }
 
-      // Génération d'ID unique
       generatedID = generateUniqueID();
       const formData = { selection: selectionValue, id: generatedID };
 
@@ -128,8 +127,8 @@
 
         alert("Données envoyées avec succès.");
       } catch (error) {
-        console.error("Erreur lors de l'envoi des données :", error);
-        alert("Échec de l'envoi des données.");
+        console.error("Erreur :", error);
+        alert("Échec de l'envoi.");
       }
 
       startCountdown(5);
@@ -156,15 +155,39 @@
           headers: { Authorization: `Bearer ${API_KEY}` }
         });
 
-        if (!response.ok) throw new Error("Erreur lors de la récupération des données");
+        if (!response.ok) throw new Error("Erreur dans la récupération");
 
         const data = await response.json();
-        console.log("Données récupérées :", data);
-        alert(`Données pour l'ID ${generatedID} récupérées avec succès.`);
+        const record = data.records[0]?.fields;
+        
+        if (record) {
+          updateImage(record);
+        } else {
+          alert("Aucune donnée trouvée dans Airtable.");
+        }
       } catch (error) {
-        console.error("Erreur lors de la récupération :", error);
-        alert("Erreur dans la récupération des données.");
+        console.error("Erreur Airtable :", error);
+        alert("Erreur lors du chargement des données.");
       }
+    }
+
+    function updateImage(record) {
+      let imageUrl;
+
+      if (record.EcologiqueCoefAverage >= 80) {
+        imageUrl = 'images/ecologique.jpg';
+      } else if (record.EconomiqueCoefAverage >= 70) {
+        imageUrl = 'images/economique.jpg';
+      } else if (record.SocialCoefAverage >= 60) {
+        imageUrl = 'images/social.jpg';
+      } else if (record.NutritionnelCoefAverage >= 50) {
+        imageUrl = 'images/nutritionnel.jpg';
+      } else {
+        imageUrl = 'images/default.jpg';
+      }
+
+      dynamicImage.src = imageUrl;
+      dynamicImage.style.display = 'block';
     }
   </script>
 </body>
