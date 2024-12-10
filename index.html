@@ -36,20 +36,6 @@
       transform: translateY(-5px);
     }
 
-    /* Titres et texte */
-    h1 {
-      font-size: 1.5em;
-      margin-bottom: 10px;
-      color: #0056b3;
-    }
-
-    .countdown {
-      font-size: 1.1em;
-      color: #007BFF;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
     /* Options */
     .options img {
       width: 100px;
@@ -66,7 +52,7 @@
       border-color: #007BFF;
     }
 
-    /* Bouton d'envoi */
+    /* Bouton */
     button {
       width: 100%;
       padding: 12px;
@@ -83,12 +69,12 @@
       background: #0056b3;
     }
 
-    /* Image dynamique */
-    .dynamic-image {
-      margin: 20px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    /* Compteur et image dynamique */
+    .countdown {
+      font-size: 1.1em;
+      color: #007BFF;
+      margin-top: 10px;
+      font-weight: bold;
     }
 
     .dynamic-image img {
@@ -99,11 +85,6 @@
       border-radius: 12px;
       transition: all 0.3s ease;
     }
-
-    /* Ajout d'effets */
-    h3 {
-      color: #555;
-    }
   </style>
 </head>
 
@@ -113,7 +94,7 @@
     <div class="question">
       <p>Choisis ton option :</p>
       <div class="options" id="options">
-        <img src="images/huile1.jpg" alt="Option A" data-value="huile d'olive A">
+        <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
         <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
         <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
       </div>
@@ -125,7 +106,7 @@
   <div class="countdown" id="countdown"></div>
 
   <div class="dynamic-image">
-    <h3>Résultat dynamique d'après Airtable</h3>
+    <h3>Résultat dynamique depuis Airtable</h3>
     <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
   </div>
 
@@ -199,7 +180,7 @@
         const record = data.records[0]?.fields;
 
         if (record) {
-          dynamicImage.src = record.ImageURL || "";
+          dynamicImage.src = getImagePath(record);
           dynamicImage.style.display = 'block';
         } else {
           alert("Aucune donnée trouvée dans Airtable.");
@@ -208,6 +189,14 @@
         console.error(error);
         alert("Erreur avec Airtable.");
       }
+    }
+
+    function getImagePath(record) {
+      if (record.EcologiqueCoefAverage >= 80) return './images/ecologique.jpg';
+      if (record.EconomiqueCoefAverage >= 70) return './images/economique.jpg';
+      if (record.SocialCoefAverage >= 60) return './images/social.jpg';
+      if (record.NutritionnelCoefAverage >= 50) return './images/nutritionnel.jpg';
+      return './images/default.jpg';
     }
   </script>
 </body>
