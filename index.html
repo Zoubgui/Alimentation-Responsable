@@ -134,6 +134,7 @@
 
     const options = document.querySelectorAll('.options img');
     let selectedOption = '';
+    let generatedID = ''; // Stocker l'ID généré globalement
 
     options.forEach(option => {
       option.addEventListener('click', () => {
@@ -165,7 +166,7 @@
       const submitButton = document.getElementById('submit-button');
       submitButton.style.display = 'none'; // Masquer le bouton après soumission
 
-      const generatedID = generateUniqueID();
+      generatedID = generateUniqueID(); // Stocker l'ID généré globalement
       const formData = { selection: selectedOption, id: generatedID };
 
       try {
@@ -178,7 +179,7 @@
         startCountdown(5);
       } catch (error) {
         alert("Échec de l'envoi des données.");
-        submitButton.style.display = 'block';
+        submitButton.style.display = 'block'; // Réafficher le bouton en cas d'erreur
       }
     });
 
@@ -202,14 +203,16 @@
           headers: { Authorization: `Bearer ${API_KEY}` }
         });
         const data = await response.json();
-        const record = data.records[0]?.fields;
+
+        // Filtrer par "Item ID" correspondant à l'ID généré
+        const record = data.records.find(record => record.fields["Item ID"] === generatedID)?.fields;
 
         if (record) {
           const dynamicImage = document.getElementById('dynamic-image');
           dynamicImage.src = getImagePath(record);
           dynamicImage.style.display = 'block';
         } else {
-          alert("Aucune donnée trouvée dans Airtable.");
+          alert("Aucun enregistrement correspondant trouvé.");
         }
       } catch (error) {
         console.error(error);
