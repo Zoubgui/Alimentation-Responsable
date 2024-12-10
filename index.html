@@ -6,36 +6,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulaire Interactif avec Airtable</title>
   <style>
-    /* Style global */
+    /* Style global pour centrer tout */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
       padding: 0;
       background: linear-gradient(to bottom, #e0eafc, #cfdef3);
       color: #333;
+      height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      align-items: center;
       flex-direction: column;
       text-align: center;
+    }
+
+    /* Conteneur principal centré */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      max-width: 500px;
       padding: 10px;
     }
 
-    /* Conteneur principal du formulaire */
+    /* Formulaire */
     form {
       background: white;
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      max-width: 420px;
+      max-width: 400px;
       width: 100%;
       transition: transform 0.2s ease;
       margin-bottom: 20px;
-    }
-
-    form:hover {
-      transform: translateY(-5px);
     }
 
     /* Options */
@@ -49,7 +54,7 @@
       transition: all 0.3s ease;
     }
 
-    /* Effet de surbrillance sur l'image sélectionnée */
+    /* Effet sur l'image sélectionnée */
     .options img.selected {
       border-color: #007BFF;
       transform: scale(1.1);
@@ -98,26 +103,28 @@
 </head>
 
 <body>
-  <!-- Question en haut de la page -->
-  <h1>Quel type d'huile d'olive préfères-tu ?</h1>
+  <div class="container">
+    <!-- Question en haut -->
+    <h1>Quel type d'huile d'olive préfères-tu ?</h1>
 
-  <!-- Formulaire avec options -->
-  <form id="quiz-form">
-    <div class="options" id="options">
-      <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
-      <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
-      <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
+    <!-- Formulaire avec options -->
+    <form id="quiz-form">
+      <div class="options" id="options">
+        <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
+        <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
+        <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
+      </div>
+      <button type="submit">Soumettre</button>
+    </form>
+
+    <!-- Countdown après soumission -->
+    <div class="countdown" id="countdown"></div>
+
+    <!-- Résultat dynamique affichée en bas -->
+    <div class="dynamic-image">
+      <h3>Résultat dynamique depuis Airtable</h3>
+      <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
     </div>
-    <button type="submit">Soumettre</button>
-  </form>
-
-  <!-- Countdown après soumission -->
-  <div class="countdown" id="countdown"></div>
-
-  <!-- Image dynamique affichée après le traitement des résultats Airtable -->
-  <div class="dynamic-image">
-    <h3>Résultat dynamique depuis Airtable</h3>
-    <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
   </div>
 
   <script>
