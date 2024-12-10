@@ -176,10 +176,10 @@
 
     function startCountdown(seconds) {
       const countdownDiv = document.getElementById('countdown');
-      countdownDiv.textContent = `Veuillez patienter ${seconds} secondes...`;
+      countdownDiv.textContent = `Résultat dans ${seconds} secondes...`;
       const interval = setInterval(() => {
         seconds -= 1;
-        countdownDiv.textContent = `Veuillez patienter ${seconds} secondes...`;
+        countdownDiv.textContent = `Résultat dans ${seconds} secondes...`;
         if (seconds <= 0) {
           clearInterval(interval);
           countdownDiv.textContent = "";
