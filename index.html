@@ -59,13 +59,13 @@
       box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
     }
 
-    select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin-bottom: 15px;
+    .selected-text {
+      text-align: center;
       font-size: 1em;
+      color: #007BFF;
+      margin-bottom: 15px;
+      font-weight: bold;
+      min-height: 20px;
     }
 
     button {
@@ -94,34 +94,43 @@
     <div class="question">
       <p>Tu dois acheter de l'huile d'olive, quelle huile d'olive achètes-tu ?</p>
       <div class="options" id="options">
-        <img src="images/huile1.jpg" alt="Option A" data-value="A">
-        <img src="images/huile2.jpg" alt="Option B" data-value="B">
-        <img src="images/huile3.jpg" alt="Option C" data-value="C">
+        <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
+        <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
+        <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
       </div>
-      <select name="selection" id="selection">
-        <option value="A">Option A</option>
-        <option value="B">Option B</option>
-        <option value="C">Option C</option>
-      </select>
+      <div class="selected-text" id="selected-text">Aucune sélection</div>
     </div>
     <button type="submit">Soumettre</button>
   </form>
 
   <script>
     const options = document.querySelectorAll('.options img');
-    const selectField = document.getElementById('selection');
+    const selectedText = document.getElementById('selected-text');
 
     options.forEach(option => {
       option.addEventListener('click', () => {
+        // Supprimer la classe 'selected' des autres options
         options.forEach(opt => opt.classList.remove('selected'));
+
+        // Ajouter la classe 'selected' à l'option cliquée
         option.classList.add('selected');
-        selectField.value = option.dataset.value;
+
+        // Mettre à jour le texte dynamique avec la valeur de l'option sélectionnée
+        selectedText.textContent = option.dataset.value;
       });
     });
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const selectionValue = selectField.value;
+
+      // Récupération de la valeur sélectionnée
+      const selectionValue = selectedText.textContent;
+
+      if (selectionValue === "Aucune sélection") {
+        alert("Veuillez sélectionner une option.");
+        return;
+      }
+
       const formData = { selection: selectionValue };
 
       try {
