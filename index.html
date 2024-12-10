@@ -122,7 +122,6 @@
 
     <!-- Résultat dynamique affichée en bas -->
     <div class="dynamic-image">
-      <h3>Résultat dynamique depuis Airtable</h3>
       <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
     </div>
   </div>
@@ -168,7 +167,6 @@
           body: JSON.stringify(formData)
         });
 
-        alert("Données envoyées avec succès.");
         startCountdown(5);
       } catch (error) {
         alert("Échec de l'envoi des données.");
