@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulaire Interactif</title>
+  <title>Formulaire Interactif avec Airtable</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -35,16 +35,15 @@
 
     .options {
       display: flex;
-      justify-content: center; /* Centre horizontalement */
-      align-items: center; /* Centre verticalement */
-      gap: 15px; /* Espace entre les images */
+      justify-content: center;
+      gap: 15px;
       margin-bottom: 15px;
     }
 
     .options img {
-      width: 100px; /* Fixe la largeur */
-      aspect-ratio: 3 / 4; /* Ratio largeur/hauteur */
-      object-fit: cover; /* Remplit le cadre sans distorsion */
+      width: 100px;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
       border: 2px solid transparent;
       border-radius: 10px;
       cursor: pointer;
@@ -68,6 +67,19 @@
       margin-bottom: 15px;
       font-weight: bold;
       min-height: 20px;
+    }
+
+    .dynamic-image {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .dynamic-image img {
+      max-width: 300px;
+      height: auto;
+      border: 2px solid #333;
+      border-radius: 10px;
+      display: none;
     }
 
     button {
@@ -105,60 +117,92 @@
     <button type="submit">Soumettre</button>
   </form>
 
-<script>
-  const options = document.querySelectorAll('.options img');
-  const selectedText = document.getElementById('selected-text');
+  <div class="dynamic-image">
+    <h3>Image dynamique basée sur Airtable</h3>
+    <img id="dynamic-image" src="" alt="Image dynamique">
+  </div>
 
-  options.forEach(option => {
-    option.addEventListener('click', () => {
-      // Supprimer la classe 'selected' des autres options
-      options.forEach(opt => opt.classList.remove('selected'));
+  <script>
+    // Configuration Airtable
+    const API_KEY = "votre_api_key"; // Remplacez par votre clé API Airtable
+    const BASE_ID = "votre_base_id"; // Remplacez par l'ID de votre base
+    const TABLE_NAME = "votre_nom_de_table"; // Remplacez par le nom de votre table
 
-      // Ajouter la classe 'selected' à l'option cliquée
-      option.classList.add('selected');
+    const options = document.querySelectorAll('.options img');
+    const selectedText = document.getElementById('selected-text');
+    const dynamicImage = document.getElementById('dynamic-image');
 
-      // Mettre à jour le texte dynamique avec la valeur de l'option sélectionnée
-      selectedText.textContent = option.dataset.value;
-    });
-  });
+    options.forEach(option => {
+      option.addEventListener('click', () => {
+        // Supprimer la classe 'selected' des autres options
+        options.forEach(opt => opt.classList.remove('selected'));
 
-  document.getElementById('quiz-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+        // Ajouter la classe 'selected' à l'option cliquée
+        option.classList.add('selected');
 
-    // Récupération de la valeur sélectionnée
-    const selectionValue = selectedText.textContent;
-
-    if (selectionValue === "Aucune sélection") {
-      alert("Veuillez sélectionner une option.");
-      return;
-    }
-
-    // Générer un ID unique
-    const uniqueID = crypto.randomUUID(); // Génère un UUID unique
-
-    // Préparer les données à envoyer
-    const formData = {
-      selection: selectionValue,
-      id: uniqueID // Ajouter l'ID unique au payload
-    };
-
-    try {
-      const response = await fetch('https://hook.eu2.make.com/ud53vd2tdm5vg9w7f13csqcr3jwbwek3', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        // Mettre à jour le texte dynamique avec la valeur de l'option sélectionnée
+        selectedText.textContent = option.dataset.value;
       });
+    });
 
-      if (response.ok) {
-        alert('Les données ont été soumises avec succès.');
-      } else {
-        alert('Échec de l’envoi des données.');
+    document.getElementById('quiz-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const selectionValue = selectedText.textContent;
+      if (selectionValue === "Aucune sélection") {
+        alert("Veuillez sélectionner une option.");
+        return;
       }
-    } catch (error) {
-      console.error('Erreur lors de l’envoi', error);
-      alert('Une erreur est survenue.');
+
+      alert(`Vous avez sélectionné : ${selectionValue}`);
+      await fetchAirtableData();
+    });
+
+    async function fetchAirtableData() {
+      try {
+        const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
+          headers: {
+            Authorization: `Bearer ${API_KEY}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des données");
+        }
+
+        const data = await response.json();
+        const records = data.records;
+
+        if (records && records.length > 0) {
+          const record = records[0].fields;
+          updateImage(record);
+        } else {
+          alert("Aucune donnée disponible.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Erreur lors du chargement des données.");
+      }
     }
-  });
-</script>
+
+    function updateImage(record) {
+      let imageUrl;
+
+      if (record.EcologiqueCoefAverage >= 80) {
+        imageUrl = 'images/ecologique.jpg';
+      } else if (record.EconomiqueCoefAverage >= 70) {
+        imageUrl = 'images/economique.jpg';
+      } else if (record.SocialCoefAverage >= 60) {
+        imageUrl = 'images/social.jpg';
+      } else if (record.NutritionnelCoefAverage >= 50) {
+        imageUrl = 'images/nutritionnel.jpg';
+      } else {
+        imageUrl = 'images/default.jpg';
+      }
+
+      dynamicImage.src = imageUrl;
+      dynamicImage.style.display = 'block';
+    }
+  </script>
 </body>
 </html>
