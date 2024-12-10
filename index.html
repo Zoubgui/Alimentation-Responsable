@@ -34,10 +34,22 @@
       margin-top: 20px;
     }
 
+    /* Redimensionnement fixe pour vos images d'options */
+    .options img {
+      width: 100px;
+      aspect-ratio: 3 / 4; /* Garde un ratio fixe */
+      object-fit: cover; /* Assure que l'image est recadrée harmonieusement */
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Limite visuelle avec les images dynamiques */
     .dynamic-image img {
-      max-width: 300px; /* Limite la largeur de l'image */
-      max-height: 300px; /* Limite la hauteur de l'image */
-      height: auto; /* Conserve les proportions */
+      max-width: 300px; 
+      max-height: 300px;
+      height: auto; 
       border: 2px solid #333;
       border-radius: 10px;
       display: none;
@@ -133,6 +145,7 @@
       }
 
       startCountdown(5);
+    });
     });
 
     function startCountdown(seconds) {
