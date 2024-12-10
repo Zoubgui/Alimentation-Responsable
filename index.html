@@ -52,7 +52,7 @@
       border-color: #007BFF;
     }
 
-    /* Bouton */
+    /* Bouton d'envoi */
     button {
       width: 100%;
       padding: 12px;
@@ -69,12 +69,12 @@
       background: #0056b3;
     }
 
-    /* Compteur et image dynamique */
-    .countdown {
-      font-size: 1.1em;
-      color: #007BFF;
-      margin-top: 10px;
-      font-weight: bold;
+    /* Image dynamique */
+    .dynamic-image {
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .dynamic-image img {
@@ -85,12 +85,16 @@
       border-radius: 12px;
       transition: all 0.3s ease;
     }
+
+    /* Ajout d'effets */
+    h3 {
+      color: #555;
+    }
   </style>
 </head>
 
 <body>
   <form id="quiz-form">
-    <h1>Quel type d'huile d'olive préfères-tu ?</h1>
     <div class="question">
       <div class="options" id="options">
         <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
@@ -104,7 +108,7 @@
   <div class="countdown" id="countdown"></div>
 
   <div class="dynamic-image">
-    <h3>Résultat dynamique depuis Airtable</h3>
+    <h3>Résultat dynamique d'après Airtable</h3>
     <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
   </div>
 
@@ -115,16 +119,13 @@
     const WEBHOOK_URL = "https://hook.eu2.make.com/ud53vd2tdm5vg9w7f13csqcr3jwbwek3";
 
     const options = document.querySelectorAll('.options img');
-    const selectedText = document.getElementById('selected-text');
     const dynamicImage = document.getElementById('dynamic-image');
     const countdownDiv = document.getElementById('countdown');
-    let generatedID = '';
+    let selectedOption = '';
 
     options.forEach(option => {
       option.addEventListener('click', () => {
-        options.forEach(opt => opt.classList.remove('selected'));
-        option.classList.add('selected');
-        selectedText.textContent = option.dataset.value;
+        selectedOption = option.dataset.value;
       });
     });
 
@@ -134,13 +135,13 @@
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (selectedText.textContent === "Aucune sélection") {
+      if (!selectedOption) {
         alert("Veuillez sélectionner une option.");
         return;
       }
 
-      generatedID = generateUniqueID();
-      const formData = { selection: selectedText.textContent, id: generatedID };
+      const generatedID = generateUniqueID();
+      const formData = { selection: selectedOption, id: generatedID };
 
       try {
         await fetch(WEBHOOK_URL, {
@@ -178,7 +179,7 @@
         const record = data.records[0]?.fields;
 
         if (record) {
-          dynamicImage.src = getImagePath(record);
+          dynamicImage.src = record.ImageURL || "";
           dynamicImage.style.display = 'block';
         } else {
           alert("Aucune donnée trouvée dans Airtable.");
@@ -187,14 +188,6 @@
         console.error(error);
         alert("Erreur avec Airtable.");
       }
-    }
-
-    function getImagePath(record) {
-      if (record.EcologiqueCoefAverage >= 80) return './images/ecologique.jpg';
-      if (record.EconomiqueCoefAverage >= 70) return './images/economique.jpg';
-      if (record.SocialCoefAverage >= 60) return './images/social.jpg';
-      if (record.NutritionnelCoefAverage >= 50) return './images/nutritionnel.jpg';
-      return './images/default.jpg';
     }
   </script>
 </body>
