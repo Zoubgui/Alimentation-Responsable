@@ -47,9 +47,10 @@
       transition: all 0.3s ease;
     }
 
-    .options img:hover {
-      transform: scale(1.1);
+    /* Effet de surbrillance sur l'image sélectionnée */
+    .options img.selected {
       border-color: #007BFF;
+      transform: scale(1.1);
     }
 
     /* Bouton */
@@ -90,15 +91,12 @@
 
 <body>
   <form id="quiz-form">
-    <h1>Quel type d'huile d'olive préfères-tu ?</h1>
     <div class="question">
-      <p>Choisis ton option :</p>
       <div class="options" id="options">
         <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
         <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
         <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
       </div>
-      <div class="selected-text" id="selected-text">Aucune sélection</div>
     </div>
     <button type="submit">Soumettre</button>
   </form>
@@ -117,16 +115,18 @@
     const WEBHOOK_URL = "https://hook.eu2.make.com/ud53vd2tdm5vg9w7f13csqcr3jwbwek3";
 
     const options = document.querySelectorAll('.options img');
-    const selectedText = document.getElementById('selected-text');
-    const dynamicImage = document.getElementById('dynamic-image');
-    const countdownDiv = document.getElementById('countdown');
-    let generatedID = '';
+    let selectedOption = '';
 
     options.forEach(option => {
       option.addEventListener('click', () => {
+        // Désélectionner toutes les autres images
         options.forEach(opt => opt.classList.remove('selected'));
+        
+        // Ajouter la classe "selected" à l'image cliquée
         option.classList.add('selected');
-        selectedText.textContent = option.dataset.value;
+        
+        // Enregistrer l'option sélectionnée
+        selectedOption = option.dataset.value;
       });
     });
 
@@ -136,13 +136,13 @@
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (selectedText.textContent === "Aucune sélection") {
+      if (!selectedOption) {
         alert("Veuillez sélectionner une option.");
         return;
       }
 
-      generatedID = generateUniqueID();
-      const formData = { selection: selectedText.textContent, id: generatedID };
+      const generatedID = generateUniqueID();
+      const formData = { selection: selectedOption, id: generatedID };
 
       try {
         await fetch(WEBHOOK_URL, {
