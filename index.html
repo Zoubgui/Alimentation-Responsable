@@ -91,6 +91,8 @@
     const dynamicImage = document.getElementById('dynamic-image');
     const countdownDiv = document.getElementById('countdown');
 
+    let generatedID = '';
+
     options.forEach(option => {
       option.addEventListener('click', () => {
         options.forEach(opt => opt.classList.remove('selected'));
@@ -98,6 +100,11 @@
         selectedText.textContent = option.dataset.value;
       });
     });
+
+    // Génération d'un ID unique
+    function generateUniqueID() {
+      return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    }
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -108,9 +115,10 @@
         return;
       }
 
-      const formData = { selection: selectionValue };
+      // Génération d'ID unique
+      generatedID = generateUniqueID();
+      const formData = { selection: selectionValue, id: generatedID };
 
-      // Envoi des données au webhook
       try {
         await fetch(WEBHOOK_URL, {
           method: "POST",
@@ -124,9 +132,7 @@
         alert("Échec de l'envoi des données.");
       }
 
-      // Afficher un compte à rebours de 5 secondes
       startCountdown(5);
-
     });
 
     function startCountdown(seconds) {
@@ -138,7 +144,7 @@
 
         if (seconds <= 0) {
           clearInterval(countdownInterval);
-          countdownDiv.textContent = ""; // Effacer le texte après la fin du décompte
+          countdownDiv.textContent = "";
           fetchAirtableData();
         }
       }, 1000);
@@ -153,37 +159,12 @@
         if (!response.ok) throw new Error("Erreur lors de la récupération des données");
 
         const data = await response.json();
-        const records = data.records;
-
-        if (records && records.length > 0) {
-          const record = records[0].fields;
-          updateImage(record);
-        } else {
-          alert("Aucune donnée disponible.");
-        }
+        console.log("Données récupérées :", data);
+        alert(`Données pour l'ID ${generatedID} récupérées avec succès.`);
       } catch (error) {
-        console.error("Erreur Airtable :", error);
-        alert("Erreur lors du chargement des données.");
+        console.error("Erreur lors de la récupération :", error);
+        alert("Erreur dans la récupération des données.");
       }
-    }
-
-    function updateImage(record) {
-      let imageUrl;
-
-      if (record.EcologiqueCoefAverage >= 80) {
-        imageUrl = 'images/ecologique.jpg';
-      } else if (record.EconomiqueCoefAverage >= 70) {
-        imageUrl = 'images/economique.jpg';
-      } else if (record.SocialCoefAverage >= 60) {
-        imageUrl = 'images/social.jpg';
-      } else if (record.NutritionnelCoefAverage >= 50) {
-        imageUrl = 'images/nutritionnel.jpg';
-      } else {
-        imageUrl = 'images/default.jpg';
-      }
-
-      dynamicImage.src = imageUrl;
-      dynamicImage.style.display = 'block';
     }
   </script>
 </body>
