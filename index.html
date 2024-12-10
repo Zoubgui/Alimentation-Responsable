@@ -114,7 +114,7 @@
         <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
         <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
       </div>
-      <button type="submit">Soumettre</button>
+      <button type="submit" id="submit-button">Soumettre</button>
     </form>
 
     <!-- Countdown après soumission -->
@@ -155,6 +155,9 @@
         return;
       }
 
+      const submitButton = document.getElementById('submit-button');
+      submitButton.style.display = 'none'; // Masquer le bouton après soumission
+
       const generatedID = generateUniqueID();
       const formData = { selection: selectedOption, id: generatedID };
 
@@ -169,6 +172,7 @@
         startCountdown(5);
       } catch (error) {
         alert("Échec de l'envoi des données.");
+        submitButton.style.display = 'block'; // Réafficher le bouton en cas d'erreur
       }
     });
 
