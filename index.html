@@ -15,10 +15,11 @@
       color: #333;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       flex-direction: column;
       text-align: center;
+      padding: 10px;
     }
 
     /* Conteneur principal du formulaire */
@@ -30,6 +31,7 @@
       max-width: 420px;
       width: 100%;
       transition: transform 0.2s ease;
+      margin-bottom: 20px;
     }
 
     form:hover {
@@ -70,12 +72,18 @@
       background: #0056b3;
     }
 
-    /* Compteur et image dynamique */
+    /* Compteur */
     .countdown {
       font-size: 1.1em;
       color: #007BFF;
       margin-top: 10px;
       font-weight: bold;
+    }
+
+    /* Résultat dynamique Airtable */
+    .dynamic-image {
+      margin-top: 20px;
+      text-align: center;
     }
 
     .dynamic-image img {
@@ -90,19 +98,23 @@
 </head>
 
 <body>
+  <!-- Question en haut de la page -->
+  <h1>Quel type d'huile d'olive préfères-tu ?</h1>
+
+  <!-- Formulaire avec options -->
   <form id="quiz-form">
-    <div class="question">
-      <div class="options" id="options">
-        <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
-        <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
-        <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
-      </div>
+    <div class="options" id="options">
+      <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
+      <img src="images/huile2.jpg" alt="Option B" data-value="Option B">
+      <img src="images/huile3.jpg" alt="Option C" data-value="Option C">
     </div>
     <button type="submit">Soumettre</button>
   </form>
 
+  <!-- Countdown après soumission -->
   <div class="countdown" id="countdown"></div>
 
+  <!-- Image dynamique affichée après le traitement des résultats Airtable -->
   <div class="dynamic-image">
     <h3>Résultat dynamique depuis Airtable</h3>
     <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
@@ -119,13 +131,8 @@
 
     options.forEach(option => {
       option.addEventListener('click', () => {
-        // Désélectionner toutes les autres images
         options.forEach(opt => opt.classList.remove('selected'));
-        
-        // Ajouter la classe "selected" à l'image cliquée
         option.classList.add('selected');
-        
-        // Enregistrer l'option sélectionnée
         selectedOption = option.dataset.value;
       });
     });
@@ -159,6 +166,7 @@
     });
 
     function startCountdown(seconds) {
+      const countdownDiv = document.getElementById('countdown');
       countdownDiv.textContent = `Veuillez patienter ${seconds} secondes...`;
       const interval = setInterval(() => {
         seconds -= 1;
@@ -180,6 +188,7 @@
         const record = data.records[0]?.fields;
 
         if (record) {
+          const dynamicImage = document.getElementById('dynamic-image');
           dynamicImage.src = getImagePath(record);
           dynamicImage.style.display = 'block';
         } else {
