@@ -35,15 +35,16 @@
 
     .options {
       display: flex;
-      gap: 10px;
-      justify-content: center;
+      justify-content: center; /* Centre horizontalement */
+      align-items: center; /* Centre verticalement */
+      gap: 15px; /* Espace entre les images */
       margin-bottom: 15px;
     }
 
     .options img {
       width: 100px; /* Fixe la largeur */
-      aspect-ratio: 3 / 11; /* Ratio largeur/hauteur */
-      object-fit: cover; /* Garantit que l'image remplit le cadre sans distorsion */
+      aspect-ratio: 3 / 4; /* Ratio largeur/hauteur */
+      object-fit: cover; /* Remplit le cadre sans distorsion */
       border: 2px solid transparent;
       border-radius: 10px;
       cursor: pointer;
