@@ -87,33 +87,34 @@
     }
 
     /* Styles pour la roue de chargement en CSS */
-    .loading {
-      display: flex; /* Utilisation de flexbox */
-      flex-direction: column; /* Placer les éléments l'un sous l'autre */
-      align-items: center; /* Centrer les éléments horizontalement */
-      justify-content: center; /* Centrer les éléments verticalement */
-      display: none;
-      margin-top: 20px;
-    }
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* Centre les éléments horizontalement */
+  width: 100%;         /* Prend toute la largeur disponible */
+  margin-top: 20px;
+  display: none;
+}
 
-    .loading .spinner {
-      border: 4px solid #f3f3f3; /* Light gray */
-      border-top: 4px solid #3498db; /* Blue */
-      border-radius: 50%;
-      width: 40px; /* Taille réduite de la roue */
-      height: 40px; /* Taille réduite de la roue */
-      animation: spin 2s linear infinite;
-    }
+.loading .spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;     /* Centre la roue horizontalement */
+}
 
-    .loading p {
-      margin-top: 10px; /* Ajouter un petit espace entre la roue et le texte */
-    }
+.loading p {
+  margin-top: 10px;
+  text-align: center;  /* Centre le texte */
+}
 
-    /* Animation de la roue de chargement */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
   </style>
 </head>
 
