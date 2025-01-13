@@ -88,19 +88,25 @@
 
   /* Styles pour la roue de chargement en CSS */
 .loading {
+  display: flex; /* Utilisation de flexbox */
+  flex-direction: column; /* Placer les éléments l'un sous l'autre */
+  align-items: center; /* Centrer les éléments horizontalement */
+  justify-content: center; /* Centrer les éléments verticalement si nécessaire */
   display: none;
-  text-align: center;
   margin-top: 20px;
-  align-self: center; /* Centrer horizontalement dans la colonne */
 }
 
-   .loading .spinner {
+.loading .spinner {
   border: 4px solid #f3f3f3; /* Light gray */
   border-top: 4px solid #3498db; /* Blue */
   border-radius: 50%;
   width: 40px; /* Taille réduite de la roue */
   height: 40px; /* Taille réduite de la roue */
   animation: spin 2s linear infinite;
+}
+
+    .loading p {
+  margin-top: 10px; /* Ajouter un petit espace entre la roue et le texte */
 }
 
     /* Animation de la roue de chargement */
