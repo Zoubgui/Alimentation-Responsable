@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulaire Interactif avec Airtable</title>
   <style>
-    /* Style global pour centrer tout */
+    /* Styles inchangés */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -21,7 +21,6 @@
       text-align: center;
     }
 
-    /* Conteneur principal centré */
     .container {
       display: flex;
       flex-direction: column;
@@ -31,7 +30,6 @@
       padding: 10px;
     }
 
-    /* Formulaire */
     form {
       background: white;
       padding: 25px;
@@ -43,7 +41,6 @@
       margin-bottom: 20px;
     }
 
-    /* Options */
     .options img {
       width: 100px;
       aspect-ratio: 3 / 4;
@@ -54,13 +51,11 @@
       transition: all 0.3s ease;
     }
 
-    /* Effet sur l'image sélectionnée */
     .options img.selected {
       border-color: #007BFF;
       transform: scale(1.1);
     }
 
-    /* Bouton */
     button {
       width: 100%;
       padding: 12px;
@@ -77,15 +72,6 @@
       background: #0056b3;
     }
 
-    /* Compteur */
-    .countdown {
-      font-size: 1.1em;
-      color: #007BFF;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    /* Résultat dynamique Airtable */
     .dynamic-image {
       margin-top: 20px;
       text-align: center;
@@ -104,10 +90,7 @@
 
 <body>
   <div class="container">
-    <!-- Question en haut -->
     <h1>Quel type d'huile d'olive préfères-tu ?</h1>
-
-    <!-- Formulaire avec options -->
     <form id="quiz-form">
       <div class="options" id="options">
         <img src="images/huile1.jpg" alt="Option A" data-value="Option A">
@@ -116,11 +99,6 @@
       </div>
       <button type="submit" id="submit-button">Soumettre</button>
     </form>
-
-    <!-- Countdown après soumission -->
-    <div class="countdown" id="countdown"></div>
-
-    <!-- Résultat dynamique affichée en bas -->
     <div class="dynamic-image">
       <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
     </div>
@@ -134,7 +112,7 @@
 
     const options = document.querySelectorAll('.options img');
     let selectedOption = '';
-    let generatedID = ''; // Stocker l'ID généré globalement
+    let generatedID = '';
 
     options.forEach(option => {
       option.addEventListener('click', () => {
@@ -166,7 +144,7 @@
       const submitButton = document.getElementById('submit-button');
       submitButton.style.display = 'none'; // Masquer le bouton après soumission
 
-      generatedID = generateUniqueID(); // Stocker l'ID généré globalement
+      generatedID = generateUniqueID();
       const formData = { selection: selectedOption, id: generatedID };
 
       try {
@@ -176,52 +154,36 @@
           body: JSON.stringify(formData)
         });
 
-        startCountdown(5);
+        await fetchAirtableData();
       } catch (error) {
         alert("Échec de l'envoi des données.");
         submitButton.style.display = 'block'; // Réafficher le bouton en cas d'erreur
       }
     });
 
-    function startCountdown(seconds) {
-      const countdownDiv = document.getElementById('countdown');
-      countdownDiv.textContent = `Résultat dans ${seconds} secondes...`;
-      const interval = setInterval(() => {
-        seconds -= 1;
-        countdownDiv.textContent = `Résultat dans ${seconds} secondes...`;
-        if (seconds <= 0) {
-          clearInterval(interval);
-          countdownDiv.textContent = "";
-          fetchAirtableData();
-        }
-      }, 1000);
-    }
-
     async function fetchAirtableData() {
-  try {
-    const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
-      headers: { Authorization: `Bearer ${API_KEY}` }
-    });
-    const data = await response.json();
+      try {
+        const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
+          headers: { Authorization: `Bearer ${API_KEY}` }
+        });
+        const data = await response.json();
 
-    // Filtrer par "Item ID" correspondant à l'ID généré
-    const record = data.records.find(record => record.fields["Item ID"] === generatedID)?.fields;
+        const record = data.records.find(record => record.fields["Item ID"] === generatedID)?.fields;
 
-    // Afficher le JSON filtré dans la console
-    console.log("JSON Filtré :", record);
+        console.log("JSON Filtré :", record);
 
-    if (record) {
-      const dynamicImage = document.getElementById('dynamic-image');
-      dynamicImage.src = getImagePath(record);
-      dynamicImage.style.display = 'block';
-    } else {
-      alert("Aucun enregistrement correspondant trouvé.");
+        if (record) {
+          const dynamicImage = document.getElementById('dynamic-image');
+          dynamicImage.src = getImagePath(record);
+          dynamicImage.style.display = 'block';
+        } else {
+          alert("Aucun enregistrement correspondant trouvé.");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Erreur avec Airtable.");
+      }
     }
-  } catch (error) {
-    console.error(error);
-    alert("Erreur avec Airtable.");
-  }
-}
   </script>
 </body>
 
