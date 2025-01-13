@@ -9,15 +9,10 @@
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: linear-gradient(to bottom, #e0eafc, #cfdef3);
       color: #333;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
+      min-height: 100vh;
     }
 
     .form-title {
@@ -28,12 +23,8 @@
     }
 
     .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       max-width: 500px;
-      padding: 10px;
+      margin: 0 auto;
     }
 
     form {
@@ -41,10 +32,17 @@
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      max-width: 400px;
       width: 100%;
       transition: transform 0.2s ease;
       margin-bottom: 20px;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
     }
 
     .options img {
@@ -148,42 +146,42 @@
       </div>
 
       <h1 class="form-title">Quel type d'oeufs préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <div class="options" id="oeuf-options">
         <img src="images/oeuf1.JPG" alt="Option A" data-value="Oeuf-A">
         <img src="images/oeuf2.JPG" alt="Option B" data-value="Oeuf-B">
         <img src="images/oeuf3.JPG" alt="Option C" data-value="Oeuf-C">
       </div>
 
       <h1 class="form-title">Quel type de pain de mie préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <div class="options" id="paindemie-options">
         <img src="images/paindemie1.JPG" alt="Option A" data-value="Paindemie-A">
         <img src="images/paindemie2.JPG" alt="Option B" data-value="Paindemie-B">
         <img src="images/paindemie3.JPG" alt="Option C" data-value="Paindemie-C">
       </div>
 
-       <h1 class="form-title">Quel type de soda préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <h1 class="form-title">Quel type de soda préfères-tu ?</h1>
+      <div class="options" id="soda-options">
         <img src="images/soda1.JPG" alt="Option A" data-value="Soda-A">
         <img src="images/soda2.JPG" alt="Option B" data-value="Soda-B">
         <img src="images/soda3.JPG" alt="Option C" data-value="Soda-C">
       </div>
 
-         <h1 class="form-title">Quel type de jus de fruits préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <h1 class="form-title">Quel type de jus de fruits préfères-tu ?</h1>
+      <div class="options" id="jusdefruits-options">
         <img src="images/jusdefruits1.JPG" alt="Option A" data-value="Jusdefruits-A">
         <img src="images/jusdefruits2.JPG" alt="Option B" data-value="Jusdefruits-B">
         <img src="images/jusdefruits3.JPG" alt="Option C" data-value="Jusdefruits-C">
       </div>
 
       <h1 class="form-title">Quel type de pâte à tartiner préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <div class="options" id="pateatartiner-options">
         <img src="images/pateatartiner1.JPG" alt="Option A" data-value="Pateatartiner-A">
         <img src="images/pateatartiner2.JPG" alt="Option B" data-value="Pateatartiner-B">
         <img src="images/pateatartiner3.JPG" alt="Option C" data-value="Pateatartiner-C">
       </div>
 
       <h1 class="form-title">Quel type de fromage préfères-tu ?</h1>
-      <div class="options" id="lait-options">
+      <div class="options" id="fromage-options">
         <img src="images/fromage1.JPG" alt="Option A" data-value="Fromage-A">
         <img src="images/fromage2.JPG" alt="Option B" data-value="Fromage-B">
         <img src="images/fromage3.JPG" alt="Option C" data-value="Fromage-C">
@@ -191,6 +189,7 @@
       
       <button type="submit" id="submit-button">Soumettre</button>
     </form>
+    
     <div class="dynamic-image">
       <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
     </div>
@@ -209,24 +208,43 @@
 
     let selections = {
       huile: '',
-      beurre: ''
+      beurre: '',
+      lait: '',
+      oeuf: '',
+      paindemie: '',
+      soda: '',
+      jusdefruits: '',
+      pateatartiner: '',
+      fromage: ''
     };
 
     let generatedID = '';
 
+    // Function to handle selection for each category
     function handleSelection(groupId, category) {
       const options = document.querySelectorAll(`#${groupId} img`);
       options.forEach(option => {
         option.addEventListener('click', () => {
+          // Remove selected class from all options in this group
           options.forEach(opt => opt.classList.remove('selected'));
+          // Add selected class to clicked option
           option.classList.add('selected');
+          // Update selections object
           selections[category] = option.dataset.value;
         });
       });
     }
 
+    // Initialize selection handlers for each category
     handleSelection('huile-options', 'huile');
     handleSelection('beurre-options', 'beurre');
+    handleSelection('lait-options', 'lait');
+    handleSelection('oeuf-options', 'oeuf');
+    handleSelection('paindemie-options', 'paindemie');
+    handleSelection('soda-options', 'soda');
+    handleSelection('jusdefruits-options', 'jusdefruits');
+    handleSelection('pateatartiner-options', 'pateatartiner');
+    handleSelection('fromage-options', 'fromage');
 
     function generateUniqueID() {
       return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
@@ -243,8 +261,13 @@
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      if (!selections.huile || !selections.beurre) {
-        alert("Veuillez faire une sélection pour chaque catégorie.");
+      // Check if all selections are made
+      const emptySelections = Object.entries(selections)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+
+      if (emptySelections.length > 0) {
+        alert(`Veuillez faire une sélection pour: ${emptySelections.join(', ')}`);
         return;
       }
 
@@ -254,8 +277,7 @@
 
       generatedID = generateUniqueID();
       const formData = {
-        huile: selections.huile,
-        beurre: selections.beurre,
+        ...selections,
         id: generatedID
       };
 
@@ -268,6 +290,7 @@
 
         await fetchAirtableDataWithPolling();
       } catch (error) {
+        console.error("Erreur lors de l'envoi des données:", error);
         alert("Échec de l'envoi des données.");
         submitButton.style.display = 'block';
         document.getElementById('loading').style.display = 'none';
@@ -306,6 +329,7 @@
 
       alert("Aucun enregistrement correspondant trouvé après plusieurs tentatives.");
       document.getElementById('loading').style.display = 'none';
+      document.getElementById('submit-button').style.display = 'block';
     }
   </script>
 </body>
