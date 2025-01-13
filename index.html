@@ -86,21 +86,25 @@
       transition: all 0.3s ease;
     }
 
-    /* Styles pour la roue de chargement en CSS */
-    .loading {
-      display: none;
-      text-align: center;
-      margin-top: 20px;
-    }
+   /* Styles pour la roue de chargement en CSS */
+.loading {
+  display: none;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 0;
+}
 
     .loading .spinner {
-      border: 6px solid #f3f3f3; /* Light gray */
-      border-top: 6px solid #3498db; /* Blue */
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 2s linear infinite;
-    }
+  border: 4px solid #f3f3f3; /* Light gray */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px; /* Taille réduite de la roue */
+  height: 40px; /* Taille réduite de la roue */
+  animation: spin 2s linear infinite;
+}
 
     /* Animation de la roue de chargement */
     @keyframes spin {
