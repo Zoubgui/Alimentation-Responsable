@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulaire Interactif avec Airtable</title>
   <style>
+    /* Styles inchangés */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -85,10 +86,11 @@
       transition: all 0.3s ease;
     }
 
+    /* Styles pour la roue de chargement et le message */
     .loading {
       display: none;
-      margin-top: 20px;
       text-align: center;
+      margin-top: 20px;
     }
 
     .loading img {
@@ -109,20 +111,24 @@
       </div>
       <button type="submit" id="submit-button">Soumettre</button>
     </form>
-    <div class="loading" id="loading-indicator">
-      <img src="images/loading.gif" alt="Chargement...">
-      <p>Chargement du résultat du questionnaire...</p>
-    </div>
     <div class="dynamic-image">
       <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
+    </div>
+
+    <!-- Roue de chargement -->
+    <div class="loading" id="loading">
+      <img src="https://cdn.jsdelivr.net/npm/spin.js@2.3.2/dist/spin.min.js" alt="chargement">
+      <p>Chargement du résultat du questionnaire...</p>
     </div>
   </div>
 
   <script>
+    const API_KEY = "patOYORnUGPBi5954.a07caa0bbe05a70bc1c17d8b53b9a78d704fb5f7e1abce5a82eaccc8e7df8add";
+    const BASE_ID = "appOzlyeIYzfoobrg";
+    const TABLE_NAME = "tblOlrjPD1eMiyPqX";
+    const WEBHOOK_URL = "https://hook.eu2.make.com/ud53vd2tdm5vg9w7f13csqcr3jwbwek3";
+
     const options = document.querySelectorAll('.options img');
-    const loadingIndicator = document.getElementById('loading-indicator');
-    const submitButton = document.getElementById('submit-button');
-    const dynamicImage = document.getElementById('dynamic-image');
     let selectedOption = '';
     let generatedID = '';
 
@@ -138,29 +144,13 @@
       return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     }
 
-    async function fetchAirtableDataWithPolling() {
-      const maxRetries = 10;
-      const delay = 2000;
-
-      for (let attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-          const response = await fetch('https://api.airtable.com/v0/...'); // Complétez avec votre URL Airtable
-          const data = await response.json();
-          const record = data.records.find(record => record.fields["Item ID"] === generatedID)?.fields;
-
-          if (record) {
-            dynamicImage.src = './images/example.jpg'; // Utilisez vos propres règles
-            dynamicImage.style.display = 'block';
-            loadingIndicator.style.display = 'none';
-            return;
-          }
-        } catch (error) {
-          console.error("Erreur :", error);
-        }
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-      alert("Aucun résultat trouvé.");
-      loadingIndicator.style.display = 'none';
+    // Cette fonction choisit l'image en fonction des résultats
+    function getImagePath(record) {
+      if (record.EcologiqueCoefAverage === 1) return './images/ecologique.jpg';
+      if (record.EconomiqueCoefAverage >= 70) return './images/economique.jpg';
+      if (record.SocialCoefAverage >= 60) return './images/social.jpg';
+      if (record.NutritionnelCoefAverage >= 50) return './images/nutritionnel.jpg';
+      return './images/default.jpg';
     }
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
@@ -170,12 +160,67 @@
         return;
       }
 
-      submitButton.style.display = 'none';
-      loadingIndicator.style.display = 'block';
+      const submitButton = document.getElementById('submit-button');
+      submitButton.style.display = 'none'; // Masquer le bouton après soumission
+
+      // Afficher la roue de chargement
+      document.getElementById('loading').style.display = 'block';
 
       generatedID = generateUniqueID();
-      await fetchAirtableDataWithPolling();
+      const formData = { selection: selectedOption, id: generatedID };
+
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData)
+        });
+
+        // Lancez le polling
+        await fetchAirtableDataWithPolling();
+      } catch (error) {
+        alert("Échec de l'envoi des données.");
+        submitButton.style.display = 'block'; // Réafficher le bouton en cas d'erreur
+        document.getElementById('loading').style.display = 'none'; // Masquer la roue de chargement
+      }
     });
+
+    async function fetchAirtableDataWithPolling() {
+      const maxRetries = 10; // Nombre maximum de tentatives
+      const delay = 2000; // Temps d'attente entre les tentatives (en millisecondes)
+
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
+            headers: { Authorization: `Bearer ${API_KEY}` }
+          });
+          const data = await response.json();
+
+          const record = data.records.find(record => record.fields["Item ID"] === generatedID)?.fields;
+
+          if (record) {
+            console.log("Enregistrement trouvé :", record);
+
+            const dynamicImage = document.getElementById('dynamic-image');
+            dynamicImage.src = getImagePath(record);
+            dynamicImage.style.display = 'block';
+
+            // Masquer la roue de chargement après la récupération des données
+            document.getElementById('loading').style.display = 'none';
+            return; // Arrêtez le polling si l'enregistrement est trouvé
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données Airtable :", error);
+        }
+
+        // Attendez avant de réessayer
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+
+      // Si aucun enregistrement n'est trouvé après toutes les tentatives
+      alert("Aucun enregistrement correspondant trouvé après plusieurs tentatives.");
+      document.getElementById('loading').style.display = 'none'; // Masquer la roue de chargement
+    }
   </script>
 </body>
 
