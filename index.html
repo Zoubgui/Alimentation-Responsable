@@ -86,16 +86,26 @@
       transition: all 0.3s ease;
     }
 
-    /* Styles pour la roue de chargement et le message */
+    /* Styles pour la roue de chargement en CSS */
     .loading {
       display: none;
       text-align: center;
       margin-top: 20px;
     }
 
-    .loading img {
+    .loading .spinner {
+      border: 6px solid #f3f3f3; /* Light gray */
+      border-top: 6px solid #3498db; /* Blue */
+      border-radius: 50%;
       width: 50px;
       height: 50px;
+      animation: spin 2s linear infinite;
+    }
+
+    /* Animation de la roue de chargement */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -117,7 +127,7 @@
 
     <!-- Roue de chargement -->
     <div class="loading" id="loading">
-      <img src="https://cdn.jsdelivr.net/npm/spin.js@2.3.2/dist/spin.min.js" alt="chargement">
+      <div class="spinner"></div>
       <p>Chargement du résultat du questionnaire...</p>
     </div>
   </div>
