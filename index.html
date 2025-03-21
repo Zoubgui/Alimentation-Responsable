@@ -340,11 +340,22 @@
           if (record) {
             console.log("Enregistrement trouvé :", record);
 
-            const dynamicImage = document.getElementById('dynamic-image');
-            dynamicImage.src = getImagePath(record);
-            dynamicImage.style.display = 'block';
+          // Retrieve EcologiqueCoefAverage from the record
+        const ecologicalCoef = record.EcologiqueCoefAverage || 0;
 
-            document.getElementById('loading').style.display = 'none';
+        // Set the gauge (slider) value to EcologiqueCoefAverage
+        document.getElementById('gauge').value = ecologicalCoef;
+        document.getElementById('gauge-value').textContent = `Score: ${ecologicalCoef}`;
+
+        // Optionally, show an image based on the value
+        const dynamicImage = document.getElementById('dynamic-image');
+        dynamicImage.src = getImagePath(record);
+        dynamicImage.style.display = 'block';
+
+        // Hide the loading and show the result
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('gauge-container').style.display = 'block';
+            
             return;
           }
         } catch (error) {
