@@ -201,9 +201,9 @@ form {
 
       <h1 class="form-title">Quel type de carottes rapées préfères-tu ?</h1>
       <div class="options" id="fromage-options">
-        <img src="images/carotte1.JPG" alt="Option A" data-value="Carotte-A">
-        <img src="images/carotte2.JPG" alt="Option B" data-value="Carotte-B">
-        <img src="images/carotte3.JPG" alt="Option C" data-value="Carotte-C">
+        <img src="images/carotte1.PNG" alt="Option A" data-value="Carotte-A">
+        <img src="images/carotte2.PNG" alt="Option B" data-value="Carotte-B">
+        <img src="images/carotte3.PNG" alt="Option C" data-value="Carotte-C">
       </div>
       
       <button type="submit" id="submit-button">Soumettre</button>
@@ -235,6 +235,7 @@ form {
       jusdefruits: '',
       pateatartiner: '',
       fromage: ''
+      carotte:''
     };
 
     let generatedID = '';
@@ -264,6 +265,7 @@ form {
     handleSelection('jusdefruits-options', 'jusdefruits');
     handleSelection('pateatartiner-options', 'pateatartiner');
     handleSelection('fromage-options', 'fromage');
+    handleSelection('carotte-options', 'carotte');
 
     function generateUniqueID() {
       return 'id-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
