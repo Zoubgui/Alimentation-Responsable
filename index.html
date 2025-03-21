@@ -328,7 +328,7 @@
   const maxRetries = 10;
   const delay = 2000;
 
- for (let attempt = 0; attempt < 10; attempt++) {
+for (let attempt = 0; attempt < 10; attempt++) {
         try {
           const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
             headers: { Authorization: `Bearer ${API_KEY}` }
@@ -339,8 +339,6 @@
           if (record) {
             document.getElementById('gauge').value = record.EcologiqueCoefAverage || 0;
             document.getElementById('gauge-value').textContent = `Score: ${record.EcologiqueCoefAverage}`;
-            displayDynamicImage(record);
-
             document.getElementById('loading').style.display = 'none';
             document.getElementById('gauge-container').style.display = 'block';
             return;
@@ -358,18 +356,31 @@
 
     document.getElementById('quiz-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       if (!selections.huile) {
         alert("Veuillez sélectionner une option !");
         return;
       }
 
       document.getElementById('submit-button').style.display = 'none';
-      document.getElementById('loading').style.display = 'block';
+      document.getElementById('loading').style.display = 'flex';
 
       generatedID = generateUniqueID();
 
-      await fetchAirtableData();
+      try {
+        await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...selections, id: generatedID })
+        });
+
+        await fetchAirtableDataWithPolling();
+      } catch (error) {
+        console.error("Erreur lors de l'envoi des données:", error);
+        alert("Échec de l'envoi des données.");
+        document.getElementById('submit-button').style.display = 'block';
+        document.getElementById('loading').style.display = 'none';
+      }
     });
   </script>
 </body>
