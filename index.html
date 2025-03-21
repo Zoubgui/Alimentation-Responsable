@@ -358,6 +358,29 @@
       document.getElementById('loading').style.display = 'none';
       document.getElementById('submit-button').style.display = 'block';
     }
+
+      document.querySelectorAll('.options img').forEach(img => {
+      img.addEventListener('click', function () {
+        let group = this.parentElement;
+        group.querySelectorAll('img').forEach(img => img.classList.remove('selected'));
+        this.classList.add('selected');
+      });
+    });
+
+    document.getElementById('quiz-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      document.getElementById('submit-button').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+
+      setTimeout(() => {
+        const randomScore = (Math.random() * 4 + 1).toFixed(1);
+        document.getElementById('gauge').value = randomScore;
+        document.getElementById('gauge-value').textContent = `Score: ${randomScore}`;
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('gauge-container').style.display = 'block';
+      }, 2000);
+    });
   </script>
 </body>
 
