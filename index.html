@@ -211,14 +211,18 @@
       <button type="submit" id="submit-button">Soumettre</button>
     </form>
     
-    <div class="dynamic-image">
-      <img id="dynamic-image" src="" alt="Image dynamique" style="display: none;">
-    </div>
-
     <div class="loading" id="loading">
       <div class="spinner"></div>
       <p>Chargement du résultat du questionnaire...</p>
     </div>
+
+     <div class="gauge-container" id="gauge-container">
+      <h2>Résultat du questionnaire</h2>
+      <input type="range" id="gauge" class="gauge" min="1" max="5" step="0.1" disabled>
+      <p id="gauge-value">Score: 0</p>
+    </div>
+
+    
   </div>
 
   <script>
