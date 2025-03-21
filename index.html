@@ -334,9 +334,12 @@ for (let attempt = 0; attempt < 10; attempt++) {
             headers: { Authorization: `Bearer ${API_KEY}` }
           });
           const data = await response.json();
+            console.log("Données reçues :", data); // Vérifier la structure des données
           const record = data.records.find(rec => rec.fields["Item ID"] === generatedID)?.fields;
+            console.log("Record trouvé :", record); // Vérifier si le bon record est trouvé
 
           if (record) {
+                console.log("Valeur EcologiqueCoefAverage :", record.EcologiqueCoefAverage); // Vérifier la valeur récupérée
             document.getElementById('gauge').value = record.EcologiqueCoefAverage || 0;
             document.getElementById('gauge-value').textContent = `Score: ${record.EcologiqueCoefAverage}`;
             document.getElementById('loading').style.display = 'none';
