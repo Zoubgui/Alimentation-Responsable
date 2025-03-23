@@ -174,10 +174,7 @@
       font-weight: 900; /* Extra bold */
       margin: 15px 0;
       transition: all 0.5s ease;
-      background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #ff3b30; /* Commence en rouge */
       display: inline-block;
       position: relative;
     }
@@ -542,16 +539,32 @@
                 // Mise à jour du texte pour inclure le texte "Score: "
                 scoreElement.textContent = `Score: ${currentScore.toFixed(1)}`;
                 
-                // Ajuster la position du dégradé en fonction du score
-                // Cette technique permet d'avoir la partie du texte qui correspond au score actuel
-                // dans la bonne couleur du dégradé (rouge pour les scores bas, vert pour les scores élevés)
-                const colorPosition = (currentScore / 5) * 100;
-                scoreElement.style.backgroundPosition = `${colorPosition}% 0`;
+                // Calculer la couleur en fonction du score (rouge à vert)
+                const ratio = currentScore / 5;
+                const r = Math.floor(255 * (1 - ratio));
+                const g = Math.floor(200 * ratio);
+                const b = 0;
+                const color = `rgb(${r}, ${g}, ${b})`;
+                
+                // Appliquer directement la couleur au texte au lieu d'utiliser un dégradé
+                scoreElement.style.background = 'none';
+                scoreElement.style.color = color;
+                scoreElement.style.webkitTextFillColor = color;
                 
                 if (progress < 1) {
                   window.requestAnimationFrame(step);
                 } else {
                   scoreElement.textContent = `Score: ${end.toFixed(1)}`;
+                  
+                  // Couleur finale basée sur le score final
+                  const finalRatio = end / 5;
+                  const finalR = Math.floor(255 * (1 - finalRatio));
+                  const finalG = Math.floor(200 * finalRatio);
+                  const finalB = 0;
+                  const finalColor = `rgb(${finalR}, ${finalG}, ${finalB})`;
+                  
+                  scoreElement.style.color = finalColor;
+                  scoreElement.style.webkitTextFillColor = finalColor;
                 }
               }
               
