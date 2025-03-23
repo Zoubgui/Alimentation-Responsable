@@ -1,9 +1,14 @@
 .score-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #046201;
+        font-size: 32px;
+        font-weight: 900; /* Extra bold */
         margin: 15px 0;
         transition: all 0.5s ease;
+        background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: inline-block;
+        position: relative;
       }<!DOCTYPE html>
 <html lang="fr">
 
@@ -543,7 +548,15 @@
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                 const currentScore = progress * (end - start) + start;
+                
+                // Mise à jour du texte pour inclure le texte "Score: "
                 scoreElement.textContent = `Score: ${currentScore.toFixed(1)}`;
+                
+                // Ajuster la position du dégradé en fonction du score
+                // Cette technique permet d'avoir la partie du texte qui correspond au score actuel
+                // dans la bonne couleur du dégradé (rouge pour les scores bas, vert pour les scores élevés)
+                const colorPosition = (currentScore / 5) * 100;
+                scoreElement.style.backgroundPosition = `${colorPosition}% 0`;
                 
                 if (progress < 1) {
                   window.requestAnimationFrame(step);
