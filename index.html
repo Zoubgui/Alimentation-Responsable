@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+.score-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #046201;
+        margin: 15px 0;
+        transition: all 0.5s ease;
+      }<!DOCTYPE html>
 <html lang="fr">
 
   <head>
@@ -180,12 +186,39 @@
         transform: translateY(-50%);
       }
 
-      .score-value {
-        font-size: 28px;
+      .score-message {
+        font-size: 18px;
         font-weight: bold;
-        color: #046201;
-        margin: 15px 0;
-        transition: all 0.5s ease;
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.8s ease;
+      }
+      
+      .score-message.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      .message-low {
+        background-color: rgba(255, 59, 48, 0.1);
+        color: #ff3b30;
+        border-left: 5px solid #ff3b30;
+      }
+      
+      .message-medium {
+        background-color: rgba(255, 204, 0, 0.1);
+        color: #ff9500;
+        border-left: 5px solid #ff9500;
+      }
+      
+      .message-high {
+        background-color: rgba(52, 199, 89, 0.1);
+        color: #34c759;
+        border-left: 5px solid #34c759;
       }
 
       /* Masquer l'input range original */
@@ -317,6 +350,10 @@
       </div>
       
       <div class="score-value" id="gauge-value">Score: 0</div>
+      
+      <div id="score-message" class="score-message">
+        <!-- Le message sera affiché ici en fonction du score -->
+      </div>
     </div>
   </div>
 
@@ -457,6 +494,10 @@
             document.getElementById('animated-gauge-value').style.width = '0%';
             document.getElementById('gauge-value').textContent = `Score: 0`;
             
+            // Masquer le message du score au début
+            const scoreMessageElement = document.getElementById('score-message');
+            scoreMessageElement.classList.remove('show', 'message-low', 'message-medium', 'message-high');
+            
             // Afficher le conteneur de la jauge
             document.getElementById('loading').style.display = 'none';
             document.getElementById('gauge-container').style.display = 'block';
@@ -468,6 +509,29 @@
               
               // Animer le score avec un compteur
               animateScoreValue(0, score, 1500);
+              
+              // Afficher le message après l'animation de la jauge
+              setTimeout(() => {
+                // Déterminer le message en fonction du score
+                let message = '';
+                let messageClass = '';
+                
+                if (score <= 2.5) {
+                  message = "L'environnement n'est pas ta priorité";
+                  messageClass = 'message-low';
+                } else if (score <= 3.5) {
+                  message = "Tu es sur la bonne voie pour préserver l'environnement";
+                  messageClass = 'message-medium';
+                } else {
+                  message = "Bravo la préservation de ton environnement dans ton alimentation n'a plus de secret pour toi";
+                  messageClass = 'message-high';
+                }
+                
+                // Afficher le message avec son style
+                scoreMessageElement.textContent = message;
+                scoreMessageElement.classList.add(messageClass, 'show');
+              }, 1800); // Afficher le message 300ms après la fin de l'animation de la jauge
+              
             }, 300);
             
             // Fonction pour animer le score avec un compteur
