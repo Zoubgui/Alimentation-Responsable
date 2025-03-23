@@ -44,8 +44,8 @@
       }
   
       .options img {
-        width: 120px;
-        height: 160px;
+        width: 160px;
+        height: 220px;
         object-fit: contain;
         background-color: #f5f5f5;
         border: 2px solid transparent;
@@ -54,6 +54,12 @@
         transition: all 0.3s ease;
         padding: 5px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .options img.selected {
+        border-color: #046201;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(4, 98, 1, 0.3);
       }
   
       .options img.selected {
@@ -206,7 +212,8 @@
 <body>
 
  <div class="logo">
-    <img src="images/vonalogo.png" alt="Logo Vona" style="max-width: 300px; margin-bottom: 20px;">
+    <img src="images/vonalogo.png" alt="Logo Vona" style="max-width: 300px; margin-bottom: 5px;">
+    <h2 style="font-style: italic; text-align: center; margin-top: 0; margin-bottom: 20px; color: #046201; font-weight: 500;">Alimentation responsable</h2>
   </div>
   
   <div class="container">
