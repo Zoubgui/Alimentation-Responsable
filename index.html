@@ -110,8 +110,78 @@
         display: none;
       }
   
-      .gauge {
+      .gauge-container {
         width: 100%;
+        text-align: center;
+        margin-top: 20px;
+        display: none;
+        padding: 20px;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .gauge-wrapper {
+        position: relative;
+        height: 30px;
+        background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
+        border-radius: 15px;
+        overflow: hidden;
+        margin: 20px 0;
+      }
+
+      .gauge-scale {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 10px;
+        box-sizing: border-box;
+        color: white;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      .gauge-scale div {
+        display: flex;
+        align-items: center;
+      }
+
+      .gauge-value {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 0%; /* Démarrera à 0 et sera animé par JS */
+        background-color: rgba(255, 255, 255, 0.3);
+        border-right: 4px solid white;
+        box-sizing: border-box;
+        transition: width 1.5s ease-in-out;
+      }
+
+      .gauge-marker {
+        position: absolute;
+        width: 3px;
+        height: 10px;
+        background-color: rgba(255, 255, 255, 0.5);
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .score-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #046201;
+        margin: 15px 0;
+        transition: all 0.5s ease;
+      }
+
+      /* Masquer l'input range original */
+      .gauge {
+        display: none;
       }
 
       .dynamic-image {
@@ -219,7 +289,24 @@
      <div class="gauge-container" id="gauge-container">
       <h2>Résultat du questionnaire</h2>
       <input type="range" id="gauge" class="gauge" min="1" max="5" step="0.1" disabled>
-      <p id="gauge-value">Score: 0</p>
+      
+      <div class="gauge-wrapper">
+        <div class="gauge-scale">
+          <div>1</div>
+          <div>2</div>
+          <div>3</div>
+          <div>4</div>
+          <div>5</div>
+        </div>
+        <div class="gauge-value" id="animated-gauge-value"></div>
+        <!-- Marqueurs pour chaque point de score -->
+        <div class="gauge-marker" style="left: 20%"></div>
+        <div class="gauge-marker" style="left: 40%"></div>
+        <div class="gauge-marker" style="left: 60%"></div>
+        <div class="gauge-marker" style="left: 80%"></div>
+      </div>
+      
+      <div class="score-value" id="gauge-value">Score: 0</div>
     </div>
   </div>
 
@@ -351,10 +438,48 @@
             const record = data.records[0].fields;
             console.log("Record trouvé:", record);
             
-            document.getElementById('gauge').value = record.EcologiqueCoefAverage || 0;
-            document.getElementById('gauge-value').textContent = `Score: ${record.EcologiqueCoefAverage}`;
+            const score = record.EcologiqueCoefAverage || 0;
+            
+            // Mettre à jour la valeur du gauge original (pour compatibilité)
+            document.getElementById('gauge').value = score;
+            
+            // Préparer l'animation
+            document.getElementById('animated-gauge-value').style.width = '0%';
+            document.getElementById('gauge-value').textContent = `Score: 0`;
+            
+            // Afficher le conteneur de la jauge
             document.getElementById('loading').style.display = 'none';
             document.getElementById('gauge-container').style.display = 'block';
+            
+            // Déclencher l'animation après un court délai
+            setTimeout(() => {
+              // Animer la jauge
+              document.getElementById('animated-gauge-value').style.width = `${(score/5)*100}%`;
+              
+              // Animer le score avec un compteur
+              animateScoreValue(0, score, 1500);
+            }, 300);
+            
+            // Fonction pour animer le score avec un compteur
+            function animateScoreValue(start, end, duration) {
+              const scoreElement = document.getElementById('gauge-value');
+              let startTimestamp = null;
+              
+              function step(timestamp) {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentScore = progress * (end - start) + start;
+                scoreElement.textContent = `Score: ${currentScore.toFixed(1)}`;
+                
+                if (progress < 1) {
+                  window.requestAnimationFrame(step);
+                } else {
+                  scoreElement.textContent = `Score: ${end.toFixed(1)}`;
+                }
+              }
+              
+              window.requestAnimationFrame(step);
+            }
             return;
           } else {
             console.log("Aucun enregistrement trouvé pour l'ID:", generatedID);
