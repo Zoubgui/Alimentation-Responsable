@@ -1,255 +1,245 @@
-.score-value {
-        font-size: 32px;
-        font-weight: 900; /* Extra bold */
-        margin: 15px 0;
-        transition: all 0.5s ease;
-        background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: inline-block;
-        position: relative;
-      }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire Interactif avec Airtable</title>
-    <style>
-      body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 20px;
-        background: linear-gradient(to bottom, #7fda7c, #93ff90);
-        color: #333;
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-  
-      .container {
-        width: 100%;
-        max-width: 500px;
-        margin: 0 auto;
-      }
-  
-      form {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        transition: transform 0.2s ease;
-        margin-bottom: 20px;
-      }
-  
-      .options {
-        display: flex;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
-        gap: 30px;
-        margin-bottom: 30px;
-      }
-  
-      .options img {
-        width: 160px;
-        height: 220px;
-        object-fit: contain;
-        background-color: #f5f5f5;
-        border: 2px solid transparent;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        padding: 5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      
-      .options img.selected {
-        border-color: #046201;
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(4, 98, 1, 0.3);
-      }
-  
-      .options img.selected {
-        border-color: #046201;
-        transform: scale(1.1);
-      }
-  
-      button {
-        width: 100%;
-        padding: 12px;
-        background: #046201;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1em;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-      }
-  
-      button:hover {
-        background: #035d00;
-      }
-  
-      .loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        margin-top: 20px;
-        display: none;
-      }
-  
-      .loading .spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #046201;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 2s linear infinite;
-        margin: 0 auto;
-      }
-  
-      .loading p {
-        margin-top: 10px;
-        text-align: center;
-      }
-  
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-  
-      .gauge-container {
-        width: 100%;
-        text-align: center;
-        margin-top: 20px;
-        display: none;
-      }
-  
-      .gauge-container {
-        width: 100%;
-        text-align: center;
-        margin-top: 20px;
-        display: none;
-        padding: 20px;
-        background-color: white;
-        border-radius: 12px;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-      }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire Interactif avec Airtable</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(to bottom, #7fda7c, #93ff90);
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
 
-      .gauge-wrapper {
-        position: relative;
-        height: 30px;
-        background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
-        border-radius: 15px;
-        overflow: hidden;
-        margin: 20px 0;
-      }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
 
-      .gauge-scale {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 10px;
-        box-sizing: border-box;
-        color: white;
-        font-weight: bold;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-      }
+    form {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      transition: transform 0.2s ease;
+      margin-bottom: 20px;
+      max-width: 1000px;
+    }
 
-      .gauge-scale div {
-        display: flex;
-        align-items: center;
-      }
+    .options {
+      display: flex;
+      justify-content: space-evenly;
+      flex-wrap: wrap;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
 
-      .gauge-value {
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 0%; /* Démarrera à 0 et sera animé par JS */
-        background-color: rgba(255, 255, 255, 0.3);
-        border-right: 4px solid white;
-        box-sizing: border-box;
-        transition: width 1.5s ease-in-out;
-      }
+    .options img {
+      width: 160px;
+      height: 220px;
+      object-fit: contain;
+      background-color: #f5f5f5;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
-      .gauge-marker {
-        position: absolute;
-        width: 3px;
-        height: 10px;
-        background-color: rgba(255, 255, 255, 0.5);
-        top: 50%;
-        transform: translateY(-50%);
-      }
+    .options img.selected {
+      border-color: #046201;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(4, 98, 1, 0.3);
+    }
 
-      .score-message {
-        font-size: 18px;
-        font-weight: bold;
-        margin-top: 20px;
-        padding: 15px;
-        border-radius: 10px;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.8s ease;
-      }
-      
-      .score-message.show {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      
-      .message-low {
-        background-color: rgba(255, 59, 48, 0.1);
-        color: #ff3b30;
-        border-left: 5px solid #ff3b30;
-      }
-      
-      .message-medium {
-        background-color: rgba(255, 204, 0, 0.1);
-        color: #ff9500;
-        border-left: 5px solid #ff9500;
-      }
-      
-      .message-high {
-        background-color: rgba(52, 199, 89, 0.1);
-        color: #34c759;
-        border-left: 5px solid #34c759;
-      }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #046201;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-      /* Masquer l'input range original */
-      .gauge {
-        display: none;
-      }
+    button:hover {
+      background: #035d00;
+    }
 
-      .dynamic-image {
-        margin-top: 20px;
-        text-align: center;
-      }
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin-top: 20px;
+      display: none;
+    }
 
-      .dynamic-image img {
-        max-width: 300px;
-        max-height: 300px;
-        height: auto;
-        border: 2px solid #046201;
-        border-radius: 12px;
-        transition: all 0.3s ease;
-      }
-    </style>
-  </head>
+    .loading .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #046201;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      margin: 0 auto;
+    }
+
+    .loading p {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .gauge-container {
+      width: 100%;
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+      padding: 20px;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .gauge-wrapper {
+      position: relative;
+      height: 30px;
+      background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .gauge-scale {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+      box-sizing: border-box;
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .gauge-scale div {
+      display: flex;
+      align-items: center;
+    }
+
+    .gauge-value {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%; /* Démarrera à 0 et sera animé par JS */
+      background-color: rgba(255, 255, 255, 0.3);
+      border-right: 4px solid white;
+      box-sizing: border-box;
+      transition: width 1.5s ease-in-out;
+    }
+
+    .gauge-marker {
+      position: absolute;
+      width: 3px;
+      height: 10px;
+      background-color: rgba(255, 255, 255, 0.5);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .score-value {
+      font-size: 32px;
+      font-weight: 900; /* Extra bold */
+      margin: 15px 0;
+      transition: all 0.5s ease;
+      background: linear-gradient(to right, #ff3b30, #ffcc00, #34c759);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      position: relative;
+    }
+
+    .score-message {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease;
+    }
+    
+    .score-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .message-low {
+      background-color: rgba(255, 59, 48, 0.1);
+      color: #ff3b30;
+      border-left: 5px solid #ff3b30;
+    }
+    
+    .message-medium {
+      background-color: rgba(255, 204, 0, 0.1);
+      color: #ff9500;
+      border-left: 5px solid #ff9500;
+    }
+    
+    .message-high {
+      background-color: rgba(52, 199, 89, 0.1);
+      color: #34c759;
+      border-left: 5px solid #34c759;
+    }
+
+    .dynamic-image {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .dynamic-image img {
+      max-width: 300px;
+      max-height: 300px;
+      height: auto;
+      border: 2px solid #046201;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    /* Masquer l'input range original */
+    .gauge {
+      display: none;
+    }
+  </style>
+</head>
 
 <body>
-
- <div class="logo">
+  <div class="logo">
     <img src="images/vonalogo.png" alt="Logo Vona" style="max-width: 300px; margin-bottom: 5px;">
     <h2 style="font-style: italic; text-align: center; margin-top: 0; margin-bottom: 20px; color: #046201; font-weight: 500;">Alimentation responsable</h2>
   </div>
@@ -334,7 +324,7 @@
       <p>Chargement du résultat du questionnaire...</p>
     </div>
 
-     <div class="gauge-container" id="gauge-container">
+    <div class="gauge-container" id="gauge-container">
       <h2>Résultat du questionnaire</h2>
       <input type="range" id="gauge" class="gauge" min="1" max="5" step="0.1" disabled>
       
@@ -567,6 +557,7 @@
               
               window.requestAnimationFrame(step);
             }
+
             return;
           } else {
             console.log("Aucun enregistrement trouvé pour l'ID:", generatedID);
