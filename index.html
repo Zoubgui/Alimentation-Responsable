@@ -83,9 +83,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       width: 100%;
       margin-top: 20px;
       display: none;
+      text-align: center;
     }
 
     .loading .spinner {
@@ -138,14 +140,7 @@
       justify-content: space-between;
       padding: 0 10px;
       box-sizing: border-box;
-      color: white;
-      font-weight: bold;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
-
-    .gauge-scale div {
-      display: flex;
-      align-items: center;
+      visibility: hidden; /* Masquer les chiffres */
     }
 
     .gauge-value {
@@ -167,6 +162,20 @@
       background-color: rgba(255, 255, 255, 0.5);
       top: 50%;
       transform: translateY(-50%);
+    }
+
+    /* Nouveau triangle de curseur */
+    .gauge-triangle {
+      position: absolute;
+      top: -10px; /* Positionnement au-dessus de la barre */
+      left: 0; /* Position initiale, sera mise à jour par JS */
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid #046201; /* Triangle pointant vers le bas */
+      transform: translateX(-50%); /* Centrer par rapport à la position */
+      transition: left 1.5s ease-in-out; /* Même transition que gauge-value */
     }
 
     .score-value {
@@ -339,6 +348,8 @@
         <div class="gauge-marker" style="left: 40%"></div>
         <div class="gauge-marker" style="left: 60%"></div>
         <div class="gauge-marker" style="left: 80%"></div>
+        <!-- Nouveau curseur triangle -->
+        <div class="gauge-triangle" id="gauge-triangle"></div>
       </div>
       
       <div class="score-value" id="gauge-value">Score: 0</div>
@@ -418,7 +429,7 @@
 
       const submitButton = document.getElementById('submit-button');
       submitButton.style.display = 'none';
-      document.getElementById('loading').style.display = 'block';
+      document.getElementById('loading').style.display = 'flex'; // Changé de 'block' à 'flex'
 
       generatedID = generateUniqueID();
       const formData = {
@@ -484,6 +495,7 @@
             
             // Préparer l'animation
             document.getElementById('animated-gauge-value').style.width = '0%';
+            document.getElementById('gauge-triangle').style.left = '0%';
             document.getElementById('gauge-value').textContent = `Score: 0`;
             
             // Masquer le message du score au début
@@ -496,8 +508,14 @@
             
             // Déclencher l'animation après un court délai
             setTimeout(() => {
+              // Calculer la position en pourcentage
+              const scorePercentage = (score/5)*100;
+              
               // Animer la jauge
-              document.getElementById('animated-gauge-value').style.width = `${(score/5)*100}%`;
+              document.getElementById('animated-gauge-value').style.width = `${scorePercentage}%`;
+              
+              // Animer le triangle
+              document.getElementById('gauge-triangle').style.left = `${scorePercentage}%`;
               
               // Animer le score avec un compteur
               animateScoreValue(0, score, 1500);
